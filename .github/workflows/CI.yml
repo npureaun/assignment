@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ dev, feat/*, refactor/*, bug/* ]
+  pull_request:
+    branches:
+      - dev
+      - main
+
+jobs:
+  build:
+    runs-on: [ ubuntu-latest ]
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+
+      - name: java setup
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt' # See 'Supported distributions' for available options
+          java-version: '17'
+
+      # gradle caching - 빌드 시간 향상
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      #application.yml 복사
+      - name: set yml
+        run: |
+          mkdir -p ./src/test/resources/
+          echo "${{ secrets.APPLICATION_TEST_YML }}" | base64 --decode > ./kotlin/src/test/resources/application.yml
+
+      - name: make executable gradlew
+        run: chmod +x ./gradlew
+
+      # test 진행
+      - name: run unittest
+        run: |
+          ./gradlew clean test --scan
