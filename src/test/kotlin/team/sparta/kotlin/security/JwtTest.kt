@@ -2,7 +2,6 @@ package team.sparta.kotlin.security
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
-import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -11,6 +10,8 @@ import org.springframework.test.context.ActiveProfiles
 import team.sparta.kotlin.domain.member.entity.MemberRole
 import team.sparta.kotlin.infra.security.jwt.JwtTokenManager
 import java.nio.charset.StandardCharsets
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -24,28 +25,28 @@ class JwtTest {
 
     @Test
     fun `토큰 안에 값이 제대로 들어왔는지 테스트하는 함수`() {
-
-        val `토큰 값` = jwtTokenManager.generateTokenResponse(
-            memberId = 1,
+        val accessToken = jwtTokenManager.generateTokenResponse(
+            memberId = 1L,
             memberRole = MemberRole.MEMBER
         ).accessToken
 
         val key = Keys.hmacShaKeyFor(secret.toByteArray(StandardCharsets.UTF_8))
-        val `토큰 꺼내기` = Jwts.parser().verifyWith(key).build().parseSignedClaims(`토큰 값`)
+        val claims = Jwts.parser().verifyWith(key).build().parseSignedClaims(accessToken)
 
-        `토큰 꺼내기`.payload.subject shouldBe "1"
-        `토큰 꺼내기`.payload.get("memberRole", String::class.java) shouldBe "MEMBER"
+        assertEquals("1", claims.payload.subject)
+        assertEquals("MEMBER", claims.payload["memberRole", String::class.java])
     }
 
     @Test
     fun `토큰이 정상적으로 검증이 되는지 테스트하는 함수`() {
-        val `토큰 값` = jwtTokenManager.generateTokenResponse(
-            memberId = 2,
+        val accessToken = jwtTokenManager.generateTokenResponse(
+            memberId = 2L,
             memberRole = MemberRole.ADMIN
         ).accessToken
 
-        val `검증된 토큰` = jwtTokenManager.validateToken(`토큰 값`)
+        val result = jwtTokenManager.validateToken(accessToken)
 
-        `검증된 토큰`.isSuccess shouldBe true
+        assertTrue(result.isSuccess)
     }
 }
+
