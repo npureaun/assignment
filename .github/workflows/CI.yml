@@ -37,7 +37,7 @@ jobs:
       - name: set yml
         run: |
           mkdir -p ./src/test/resources/
-          echo "${{ secrets.APPLICATION_TEST_YML }}" | base64 --decode > ./kotlin/src/test/resources/application.yml
+          echo "${{ secrets.APPLICATION_TEST_YML }}" | base64 --decode > ./src/test/resources/application.yml
 
       - name: make executable gradlew
         run: chmod +x ./gradlew
