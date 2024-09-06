@@ -1,4 +1,4 @@
-package team.sparta.kotlin.infra.security.jwt
+package team.sparta.kotlin.infra.security.jwt.config
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority

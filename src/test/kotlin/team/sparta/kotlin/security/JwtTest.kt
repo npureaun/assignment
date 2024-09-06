@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import team.sparta.kotlin.domain.member.entity.MemberRole
-import team.sparta.kotlin.infra.security.jwt.JwtTokenManager
+import team.sparta.kotlin.infra.security.jwt.config.JwtTokenManager
 import java.nio.charset.StandardCharsets
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

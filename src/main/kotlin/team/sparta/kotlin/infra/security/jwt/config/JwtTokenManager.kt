@@ -1,4 +1,4 @@
-package team.sparta.kotlin.infra.security.jwt
+package team.sparta.kotlin.infra.security.jwt.config
 
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jws
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import team.sparta.kotlin.domain.member.dto.TokenResponse
 import team.sparta.kotlin.domain.member.entity.MemberRole
-import team.sparta.kotlin.infra.security.jwt.dto.TokenType
+import team.sparta.kotlin.infra.security.jwt.JwtRepository
 import java.nio.charset.StandardCharsets
 import java.time.Instant
 import java.util.Date
@@ -67,5 +67,9 @@ class JwtTokenManager(
         return kotlin.runCatching {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token)
         }
+    }
+
+    fun getMemberId(token: String): Long {
+        return Jwts.parser().verifyWith(key).build().parseSignedClaims(token).payload.subject.toLong()
     }
 }

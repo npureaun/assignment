@@ -1,21 +1,18 @@
 package team.sparta.kotlin.domain.member.controller
 
-import jakarta.servlet.http.HttpServletResponse
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import team.sparta.kotlin.domain.member.dto.LoginRequest
 import team.sparta.kotlin.domain.member.dto.ProfileResponse
 import team.sparta.kotlin.domain.member.dto.SignUpRequest
 import team.sparta.kotlin.domain.member.service.MemberService
-import team.sparta.kotlin.infra.security.jwt.UserPrincipal
+import team.sparta.kotlin.infra.security.jwt.config.UserPrincipal
 
 @RestController
 class MemberController(
@@ -32,31 +29,14 @@ class MemberController(
     fun login(@RequestBody request: LoginRequest): ResponseEntity<String> {
         val token = memberService.login(request)
 
-        // val cookie = ResponseCookie.from("refreshToken", token.refreshToken)
-        //     .httpOnly(true)
-        //     .secure(true)
-        //     .sameSite("None")
-        //     .maxAge(7 * 24 * 60 * 60)
-        //     .path("/")
-        //     .build()
-
         return ResponseEntity.status(HttpStatus.OK)
-            // .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(token.accessToken)
     }
 
-    //@PostMapping("/auth/logout")
-    fun logout(response: HttpServletResponse): ResponseEntity<Void> {
-        val deleteCookie = ResponseCookie.from("refreshToken", "")
-            .httpOnly(true)
-            .secure(true)
-            .sameSite("None")
-            .maxAge(0)
-            .path("/")
-            .build()
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).header(HttpHeaders.SET_COOKIE, deleteCookie.toString())
-            .build()
+    @PostMapping("logout")
+    fun logout(@AuthenticationPrincipal principal: UserPrincipal): ResponseEntity<Unit> {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+            .body(memberService.logout(principal))
     }
 
     @DeleteMapping("/deactivate")
@@ -67,11 +47,11 @@ class MemberController(
             .build()
     }
 
-    //@PostMapping("/auth/refresh-token")
+    @PostMapping("/refresh-token")
     fun refreshAccessToken(
-        @CookieValue("refreshToken") refreshToken: String
+        @RequestParam accessToken: String,
     ): ResponseEntity<String> {
-        val tokenResponse = memberService.refreshAccessToken(refreshToken)
+        val tokenResponse = memberService.refreshAccessToken(accessToken)
         return ResponseEntity.ok().body(tokenResponse.accessToken)
     }
 }

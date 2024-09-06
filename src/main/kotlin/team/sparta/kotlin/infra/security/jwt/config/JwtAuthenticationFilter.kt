@@ -1,4 +1,4 @@
-package team.sparta.kotlin.infra.security.jwt
+package team.sparta.kotlin.infra.security.jwt.config
 
 import io.jsonwebtoken.ExpiredJwtException
 import jakarta.servlet.FilterChain
@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
-import team.sparta.kotlin.infra.security.jwt.dto.TokenType
 
 @Component
 class JwtAuthenticationFilter(
@@ -30,7 +29,6 @@ class JwtAuthenticationFilter(
                 val tokenType = it.payload.get(JwtTokenManager.TOKEN_TYPE_KEY, String::class.java)
                 val memberRole = it.payload.get(JwtTokenManager.MEMBER_ROLE_KEY, String::class.java)
                 val memberId: Long = it.payload.subject.toLong()
-
                 if (tokenType == TokenType.REFRESH_TOKEN_TYPE.name) {
                     return@onSuccess
                 }
