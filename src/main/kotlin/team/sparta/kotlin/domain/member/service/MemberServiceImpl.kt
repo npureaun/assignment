@@ -68,7 +68,6 @@ class MemberServiceImpl @Autowired constructor(
         jwtRepository.deleteByMemberId(principal.memberId)
     }
 
-    @Transactional
     override fun logout(principal: UserPrincipal) {
         jwtRepository.deleteByMemberId(principal.memberId)
     }
