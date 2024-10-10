@@ -32,20 +32,20 @@ class MemberController(
     fun login(@RequestBody request: LoginRequest): ResponseEntity<String> {
         val token = memberService.login(request)
 
-        // val cookie = ResponseCookie.from("refreshToken", token.refreshToken)
-        //     .httpOnly(true)
-        //     .secure(true)
-        //     .sameSite("None")
-        //     .maxAge(7 * 24 * 60 * 60)
-        //     .path("/")
-        //     .build()
+        val cookie = ResponseCookie.from("refreshToken", token.refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("None")
+            .maxAge(7 * 24 * 60 * 60)
+            .path("/")
+            .build()
 
         return ResponseEntity.status(HttpStatus.OK)
-            // .header(HttpHeaders.SET_COOKIE, cookie.toString())
+            .header(HttpHeaders.SET_COOKIE, cookie.toString())
             .body(token.accessToken)
     }
 
-    //@PostMapping("/auth/logout")
+    @PostMapping("/auth/logout")
     fun logout(response: HttpServletResponse): ResponseEntity<Void> {
         val deleteCookie = ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
@@ -67,7 +67,7 @@ class MemberController(
             .build()
     }
 
-    //@PostMapping("/auth/refresh-token")
+    @PostMapping("/auth/refresh-token")
     fun refreshAccessToken(
         @CookieValue("refreshToken") refreshToken: String
     ): ResponseEntity<String> {
