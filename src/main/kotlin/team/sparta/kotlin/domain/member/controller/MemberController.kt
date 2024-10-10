@@ -46,7 +46,7 @@ class MemberController(
     }
 
     @PostMapping("/auth/logout")
-    fun logout(response: HttpServletResponse): ResponseEntity<Void> {
+    fun logout(): ResponseEntity<Void> {
         val deleteCookie = ResponseCookie.from("refreshToken", "")
             .httpOnly(true)
             .secure(true)
