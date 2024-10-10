@@ -30,17 +30,13 @@ class MemberServiceImpl @Autowired constructor(
         return ProfileResponse.from(member)
     }
 
-    @Transactional
     override fun login(request: LoginRequest): TokenResponse {
         val loginMember = memberRepository.findByUsername(request.username) ?: throw IllegalStateException("유저정보 없음")
         check(
-            passwordEncoder.matches(
-                request.password,
-                loginMember.password
-            )
+            passwordEncoder.matches(request.password, loginMember.password)
         ) { "비밀번호가 맞지 않음" }
         val tokens = jwtTokenManager.generateTokenResponse(loginMember.id!!, MemberRole.MEMBER)
-        updateRefreshToken(loginMember.id!!,tokens.refreshToken)
+        updateRefreshToken(loginMember.id!!, tokens.refreshToken)
         return tokens
     }
 
