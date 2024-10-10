@@ -49,8 +49,9 @@ class MemberController(
 
     @PostMapping("/refresh-token")
     fun refreshAccessToken(
-        @RequestParam accessToken: String,
+        @RequestHeader("Authorization") authorization: String,
     ): ResponseEntity<String> {
+        val accessToken = authorization.substring("Bearer ".length) // Bearer에서 토큰 추출
         val tokenResponse = memberService.refreshAccessToken(accessToken)
         return ResponseEntity.ok().body(tokenResponse.accessToken)
     }
